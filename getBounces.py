@@ -12,12 +12,13 @@ import getpass
 # get the username and password securely so it's not sitting in the code here:
 user = raw_input('Enter your Zendesk username: ')
 pwd = getpass.getpass('Enter your Zendesk password: ')
+org = raw_input('Enter your organization ')
 
 # this array will store the bounce ticket IDs
 BounceTickets = []
 
 def getTickets(message, BounceTickets, user, pwd):
-	url = 'https://speedgauge.zendesk.com/api/v2/search.json?query=type:ticket status:new subject:"{0}" group:"Bounce emails"'.format(message)
+	url = 'https://{0}.zendesk.com/api/v2/search.json?query=type:ticket status:new subject:"{1}" group:"Bounce emails"'.format(org, message)
 	# Zendesk returns 100 tickets and provides a next page URL if there are more
 	# so we need to loop through each page of results
 	while url:
@@ -62,7 +63,7 @@ numReqs = 0
 # for each ticket ID
 for ticket_id in BounceTickets:
 #retrieve the comments
-	url = 'https://speedgauge.zendesk.com/api/v2/tickets/{0}/comments.json'.format(ticket_id)
+	url = 'https://{0}.zendesk.com/api/v2/tickets/{1}/comments.json'.format(org, ticket_id)
 	response = requests.get(url, auth=(user, pwd))
 
 # so that we don't exceed the 200 requests/minute limit, we will rest for 1 second every 3 requests 
