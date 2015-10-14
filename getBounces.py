@@ -38,7 +38,7 @@ def getTickets(message, BounceTickets, user, pwd):
 
 # there are three subject lines that we're looking for right now.
 # if more come up, they can be added to the messages array:
-messages = ["Delivery Status Notification", "Undeliverable: ", "Undelivered Mail Returned to Sender"]
+messages = ["Delivery Status Notification ", "Undeliverable: ", "Undelivered Mail Returned to Sender", "Undeliverable mail "]
 for message in messages:
 	BounceTickets = getTickets(message, BounceTickets, user, pwd)
 
