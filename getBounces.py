@@ -12,7 +12,7 @@ import getpass
 # get the username and password securely so it's not sitting in the code here:
 user = raw_input('Enter your Zendesk username: ')
 pwd = getpass.getpass('Enter your Zendesk password: ')
-org = raw_input('Enter your organization ')
+org = raw_input('Enter your organization: ')
 
 # this array will store the bounce ticket IDs
 BounceTickets = []
@@ -45,7 +45,8 @@ for message in messages:
 # tell us how many bounces we have
 print "There are {0} bounce tickets".format(len(BounceTickets))
 # show me all the ticket IDs
-print sorted(BounceTickets)
+BounceTickets = sorted(BounceTickets)
+print BounceTickets
 
 # now we have an array, BouceTickets, with the IDs for all of our bounces
 # we will use those IDs to retrieve the URLs for the ticket attachments
