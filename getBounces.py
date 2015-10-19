@@ -8,6 +8,7 @@ import requests
 import os
 import time
 import getpass
+import operator
 
 # get the username and password securely so it's not sitting in the code here:
 user = raw_input('Enter your Zendesk username: ')
@@ -119,14 +120,16 @@ if myNumbers:
 else:
 	i = 1
 
-# now access each attachment URL online and save it
-#for AttachmentURL in BounceAttachmentURLs:
-for AttachmentURL in BounceAttachmentURLs.keys():
+#for AttachmentURL in BounceAttachmentURLs.keys():
 
-# we don't actually need to authenticate to make the download, but if we did it would be:
-#	r = requests.get(AttachmentURL, auth=('{username}', '{pw}'))
+# sorts according to the VALUES (i.e. the ticket numbers)
+sortedAttachmentURLs = sorted(BounceAttachmentURLs.items(), key=operator.itemgetter(1))
+
+# now access each attachment URL online and save it
+for AttachmentURL in sortedAttachmentURLs:
+
 # get the part of the URL with the filename (because we have both .eml and other attachments)
-	myFilename = AttachmentURL.split("name=")[1]
+	myFilename = AttachmentURL[0].split("name=")[1]
 
 # our saved file will use that name, and a digit so that they don't overwrite each other
 # we also want the file extension at the end so that we can open it more easily 
@@ -137,19 +140,19 @@ for AttachmentURL in BounceAttachmentURLs.keys():
 		myFilename = myFilenameParts[0] + "({0})".format(i)
 
 	# get our attachment content
-	r = requests.get(AttachmentURL)
+	r = requests.get(AttachmentURL[0])
 	# not too fast:
-	if len(BounceAttachmentURLs) > 175 and i % 3 ==0:
+	if len(sortedAttachmentURLs) > 175 and i % 3 ==0:
 		time.sleep(1)
 	# save it with our filename
 	try:
 		with open(myFilename, 'w') as f:
 			f.write(r.text)
-			print "{0} files saved (ticket {1})".format(k, BounceAttachmentURLs[AttachmentURL])
+			print "{0} files saved (ticket {1})".format(k, AttachmentURL[1])
 		i += 1
 		k += 1
 	except UnicodeEncodeError:
-		print "Could not write an attachment for ticket #{0}".format(BounceAttachmentURLs[AttachmentURL])
+		print "Could not write an attachment for ticket #{0}".format(AttachmentURL[1])
 		pass
 
 print "The attachments have all been retrieved"
