@@ -49,6 +49,10 @@ print "There are {0} bounce tickets".format(len(BounceTickets))
 BounceTickets = sorted(BounceTickets)
 print BounceTickets
 
+proceed = raw_input("Is that the correct number of tickets?\nShall we proceed? (y/n)")
+if proceed == "n":
+	exit()
+
 # now we have an array, BouceTickets, with the IDs for all of our bounces
 # we will use those IDs to retrieve the URLs for the ticket attachments
 
