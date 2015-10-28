@@ -74,8 +74,9 @@ for ticket_id in BounceTickets:
 	if numReqs % 3 == 0 and len(BounceTickets) > 150:
 		time.sleep(1)
 
-# let us know that we're going fine (give me peace of mind when I see the '200's)
-	print response.status_code
+# let us know if there was an HTTP error
+	if response.status_code != 200:
+		print response.status_code
 
 # get the comments
 	data = response.json()
