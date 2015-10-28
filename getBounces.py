@@ -1,9 +1,5 @@
 #!/usr/bin/python
 
-# modification to gather crumbs WITH TICKET IDs
-# this uses a dictionary so that when writing the attachment failes
-# we can display the ticket ID that failed and see if there is a problem
-
 import requests
 import os
 import time
@@ -79,7 +75,8 @@ for ticket_id in BounceTickets:
 		time.sleep(1)
 
 # let us know that we're going fine (give me peace of mind when I see the '200's)
-	print response.status_code
+	if response.status_code != 200:
+		print response.status_code
 
 # get the comments
 	data = response.json()
