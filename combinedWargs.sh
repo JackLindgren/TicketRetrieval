@@ -30,23 +30,25 @@ while getopts ":g :c :s :l" opt; do
 			;;
 		s)
 			echo "we'll sort the files"
+			mv unattachedBounces.txt ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/" 2> error_log
 			# move the bounce messages to the folder for the day's bounces
-			mv ./unnamed_attachment_1* ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/"
+			mv ./unnamed_attachment_1* ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/" 2> error_log
 			# move the SL bounces to their folder
-			grep -lsi 'suppression' ./"Bounces$(date '+%Y-%m-%d')/BounceMessages"/unnamed_attachment_1* | xargs -I '{}' mv '{}' ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/SL"
+			grep -lsi 'suppression' ./"Bounces$(date '+%Y-%m-%d')/BounceMessages"/unnamed_attachment_1* | xargs -I '{}' mv '{}' ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/SL" 2> error_log
 			# move the rest of them to the non-SL bounce folder
-			mv ./"Bounces$(date '+%Y-%m-%d')/BounceMessages"/unnamed_attachment_1* ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/NonSL/"
+			mv ./"Bounces$(date '+%Y-%m-%d')/BounceMessages"/unnamed_attachment_1* ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/NonSL/" 2> error_log
 #3			mv ./"failure notice"* "./Bounces$(date '+%Y-%m-%d')/BounceMessages/Other/"
 #4			mv ./"Mail delivery failed"* "./Bounces$(date '+%Y-%m-%d')/BounceMessages/Other/"
 			# move the original messages to their folder
-			mv ./unnamed_attachment_2*eml* ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages/"
+			mv ./unnamed_attachment_2*eml* ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages/" 2> error_log
 			# move the report ones to their place
-			grep -lsi '^subject.*report' ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages"/unnamed_attachment_2* | xargs -I '{}' mv '{}' "./Bounces$(date '+%Y-%m-%d')/OriginalMessages/Report"
+			grep -lsi '^subject.*report' ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages"/unnamed_attachment_2* | xargs -I '{}' mv '{}' "./Bounces$(date '+%Y-%m-%d')/OriginalMessages/Report" 2> error_log
 			# and the report ones to theirs
-			grep -lsi '^subject.*alert' ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages"/unnamed_attachment_2* | xargs -I '{}' mv '{}' "./Bounces$(date '+%Y-%m-%d')/OriginalMessages/Alert"
+			grep -lsi '^subject.*alert' ./"Bounces$(date '+%Y-%m-%d')/OriginalMessages"/unnamed_attachment_2* | xargs -I '{}' mv '{}' "./Bounces$(date '+%Y-%m-%d')/OriginalMessages/Alert" 2> error_log
 			;;
 		l)
 			echo "we'll make a list of the files"
+			grep @ ././"Bounces$(date '+%Y-%m-%d')/BounceMessages/unattachedBounces.txt" | cut -f2 -d\< | cut -f1 -d\> | sort | uniq -c > "Bounces$(date '+%Y-%m-%d')"/otherBouncers.txt
 			# go through the SL bounces and find the email addresses
 			grep @ ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/SL"/unnamed_attachment_1* | cut -f2 -d\; | cut -c2- | sort | uniq -c >  "Bounces$(date '+%Y-%m-%d')/SLadd$(date '+%Y-%m-%d').txt"
 			# go through the non-SL bounces and find the email addresses
