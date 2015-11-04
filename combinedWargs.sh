@@ -30,6 +30,8 @@ while getopts ":g :c :s :l" opt; do
 			;;
 		s)
 			echo "we'll sort the files"
+			mv "unattachedBounces.txt" ./"Bounces$(date '+%Y-%m-%d')" 2> error_log
+			grep @ ././"Bounces$(date '+%Y-%m-%d')/unattachedBounces.txt" | cut -f2 -d\< | cut -f1 -d\> | sort | uniq -c > otherBouncers.txt
 			# move the bounce messages to the folder for the day's bounces
 			mv ./unnamed_attachment_1* ./"Bounces$(date '+%Y-%m-%d')/BounceMessages/"
 			# move the SL bounces to their folder
