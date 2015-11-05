@@ -43,17 +43,23 @@ messages = ["Delivery Status Notification ", "Undeliverable: ", "Undelivered Mai
 for message in messages:
 	BounceTickets = getTickets(message, BounceTickets, user, pwd)
 
+noAttachments = []
+noAttachments = getTickets("Mail delivery failed", noAttachments, user, pwd)
+
 # tell us how many bounces we have
-print "There are {0} bounce tickets".format(len(BounceTickets))
+print "There are {0} bounce tickets".format(len(BounceTickets) + len(noAttachments))
 # show me all the ticket IDs
 BounceTickets = sorted(BounceTickets)
+noAttachments = sorted(noAttachments)
 print BounceTickets
+print noAttachments
 
 proceed = raw_input("Is that the correct number of tickets?\nShall we proceed? (y/n)")
 if proceed == "n":
 	exit()
 
 # now we have an array, BouceTickets, with the IDs for all of our bounces
+# we also have an array noAttachments for the tickets that have a message, not txt and eml files
 # we will use those IDs to retrieve the URLs for the ticket attachments
 
 # this will hold our URLs
@@ -68,24 +74,24 @@ numReqs = 0
 
 # for each ticket ID
 for ticket_id in BounceTickets:
-#retrieve the comments
+	#retrieve the comments
 	url = 'https://{0}.zendesk.com/api/v2/tickets/{1}/comments.json'.format(org, ticket_id)
 	response = requests.get(url, auth=(user, pwd))
 
-# so that we don't exceed the 200 requests/minute limit, we will rest for 1 second every 3 requests 
-# 	if there are more than 200 tickets (201 requests / 3 = 67 seconds)
+	# so that we don't exceed the 200 requests/minute limit, we will rest for 1 second every 3 requests 
+	# 	if there are more than 200 tickets (201 requests / 3 = 67 seconds)
 	numReqs += 1
 	if numReqs % 3 == 0 and len(BounceTickets) > 150:
 		time.sleep(1)
 
-# let us know if there was an HTTP error
+	# let us know if there was an HTTP error
 	if response.status_code != 200:
 		print response.status_code
 
-# get the comments
+	# get the comments
 	data = response.json()
 	my_comments = data['comments']
-# get the attachments for each comment (the IDs actually)
+	# get the attachments for each comment (the IDs actually)
 	for comment in my_comments:
 		my_attachments = comment['attachments']
 	# each comment can have more than one attachment, so
@@ -97,9 +103,31 @@ for ticket_id in BounceTickets:
 		#BounceAttachmentURLs.append(this_attachment['content_url'])
 		BounceAttachmentURLs[this_attachment['content_url']] = ticket_id
 		numAts += 1
-# print "comment and attachments retrieved for ticket #{0}".format(numTix)
+	# print "comment and attachments retrieved for ticket #{0}".format(numTix)
 	print "comment and attachments retrieved for ticket #{0}".format(ticket_id)
 	numTix += 1
+
+# get the comments for the bounces where there is no attachment
+noAttachmentComments = []
+for ticket_id in noAttachments:
+	url = 'https://{0}.zendesk.com/api/v2/tickets/{1}/comments.json'.format(org, ticket_id)
+	response = requests.get(url, auth=(user, pwd))
+	if response.status_code != 200:
+		print response.status_code
+	data = response.json()
+	my_comments = data['comments']
+	for comment in my_comments:
+		noAttachmentComments.append(comment['body'])
+
+# write those comments to their own file
+try:
+	with open("unattachedBounces.txt", 'w') as f:
+		for comment in noAttachmentComments:
+			f.write(comment)
+	print "Unattached comments saved"
+except UnicodeEncodeError:
+	print "Could not write an attachment for ticket #{0}".format(AttachmentURL[1])
+	pass
 
 # show us all of our URLs
 #for AttachmentURL in BounceAttachmentURLs:
@@ -133,11 +161,11 @@ sortedAttachmentURLs = sorted(BounceAttachmentURLs.items(), key=operator.itemget
 # now access each attachment URL online and save it
 for AttachmentURL in sortedAttachmentURLs:
 
-# get the part of the URL with the filename (because we have both .eml and other attachments)
+	# get the part of the URL with the filename (because we have both .eml and other attachments)
 	myFilename = AttachmentURL[0].split("name=")[1]
 
-# our saved file will use that name, and a digit so that they don't overwrite each other
-# we also want the file extension at the end so that we can open it more easily 
+	# our saved file will use that name, and a digit so that they don't overwrite each other
+	# we also want the file extension at the end so that we can open it more easily 
 	myFilenameParts = myFilename.split('.')
 	if ".eml" in myFilename:
 		myFilename = myFilenameParts[0] + "({0})".format(i) + ".eml"
