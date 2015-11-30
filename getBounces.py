@@ -43,8 +43,14 @@ messages = ["Delivery Status Notification ", "Undeliverable: ", "Undelivered Mai
 for message in messages:
 	BounceTickets = getTickets(message, BounceTickets, user, pwd)
 
+#noAttachments = []
+#noAttachments = getTickets("Mail delivery failed", noAttachments, user, pwd)
 noAttachments = []
-noAttachments = getTickets("Mail delivery failed", noAttachments, user, pwd)
+# array of potential non-attachment bounce messages:
+messages = ["Mail delivery failed", "failure notice"]
+for message in messages:
+	noAttachments = getTickets(message, noAttachments, user, pwd)
+
 
 # tell us how many bounces we have
 print "There are {0} bounce tickets".format(len(BounceTickets) + len(noAttachments))
