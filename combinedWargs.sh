@@ -11,6 +11,9 @@ while getopts ":g :c :s :l" opt; do
 		g)
 			echo "we'll get the files" >&2
 			python getBounces.py
+			rc=$?
+			if [ "$rc" == "165" ]
+				then exit; fi
 #1			python getMessages.py
 			;;
 		c)
