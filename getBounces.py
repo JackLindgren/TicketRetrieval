@@ -9,6 +9,7 @@ import os
 import time
 import getpass
 import operator
+import sys
 
 # get the username and password securely so it's not sitting in the code here:
 user = raw_input('Enter your Zendesk username: ')
@@ -62,7 +63,7 @@ print noAttachments
 
 proceed = raw_input("Is that the correct number of tickets?\nShall we proceed? (y/n)")
 if proceed == "n":
-	exit()
+	sys.exit(165)
 
 # now we have an array, BouceTickets, with the IDs for all of our bounces
 # we also have an array noAttachments for the tickets that have a message, not txt and eml files
