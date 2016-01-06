@@ -61,7 +61,7 @@ noAttachments = sorted(noAttachments)
 print BounceTickets
 print noAttachments
 
-proceed = raw_input("Is that the correct number of tickets?\nShall we proceed? (y/n)")
+proceed = raw_input("Is that the correct number of tickets?\nShall we proceed? (y/n) ")
 if proceed == "n":
 	sys.exit(165)
 
