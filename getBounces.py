@@ -38,9 +38,15 @@ def getTickets(message, BounceTickets, user, pwd):
 		url = data['next_page']
 	return BounceTickets
 
-# there are three subject lines that we're looking for right now.
-# if more come up, they can be added to the messages array:
-messages = ["Delivery Status Notification ", "Undeliverable: ", "Undelivered Mail Returned to Sender", "Undeliverable mail ", "Delivery failure", "Returned mail"]
+def getSubjects():
+	# get messages from the messages.txt file
+	f = open("messages.txt", "r")
+	messages = f.read()
+	messages = messages.split("\n")
+	return messages
+
+# read the messages from a file ^
+messages = getSubjects()
 for message in messages:
 	BounceTickets = getTickets(message, BounceTickets, user, pwd)
 
