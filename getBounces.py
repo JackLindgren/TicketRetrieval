@@ -58,6 +58,7 @@ messages = ["Mail delivery failed", "failure notice"]
 for message in messages:
 	noAttachments = getTickets(message, noAttachments, user, pwd)
 
+BounceTickets = list(set(BounceTickets))
 
 # tell us how many bounces we have
 print "There are {0} bounce tickets".format(len(BounceTickets) + len(noAttachments))
