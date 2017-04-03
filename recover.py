@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import requests
 import getpass
 
@@ -7,8 +9,17 @@ org = raw_input('Enter your organization: ')
 
 SuspendedTickets = []
 
+def getSubjects():
+	# get messages from the messages.txt file
+	f = open("messages.txt", "r")
+	messages = f.read()
+	messages = messages.split("\n")
+	return messages
+
 def getTickets(SuspendedTickets, user, pwd):
 	url = 'https://{0}.zendesk.com/api/v2/suspended_tickets.json'.format(org)
+
+	subjects = getSubjects()
 
 	# Zendesk returns 100 tickets and provides a next page URL if there are more
 	# so we need to iterate through each page of results
@@ -23,6 +34,7 @@ def getTickets(SuspendedTickets, user, pwd):
 		for ticket in ticket_list:
 			# hardcoding the subject here...
 			if ticket['subject'] == "Delivery Status Notification (Failure)":
+			#if ticket['subject'] in subjects:
 				SuspendedTickets.append(ticket['id'])
 	# change the URL to the next page's URL and repeat
 	# if there is no next page, the loop will end

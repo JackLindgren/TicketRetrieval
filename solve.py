@@ -9,7 +9,16 @@ OpenBounceTickets = []
 
 #url = 'https://{0}.zendesk.com/api/v2/search.json?query=type:ticket subject:"Delivery Status Notification (Failure)" group_id:21775730'.format(org)
 
+def getSubjects():
+	# get messages from the messages.txt file
+	f = open("messages.txt", "r")
+	messages = f.read()
+	messages = messages.split("\n")
+	return messages
+
 def getTickets(SuspendedTickets, user, pwd):
+	subjects = getSubjects()
+
 	# hardcoding the subject again because this takes care of 90% of what I care about:
 	url = 'https://{0}.zendesk.com/api/v2/search.json?query=type:ticket status:New subject:"Delivery Status Notification (Failure)" group_id:21775730'.format(org)
 	while url:
@@ -19,6 +28,7 @@ def getTickets(SuspendedTickets, user, pwd):
 		for ticket in ticket_list:
 			# double check - probably redundant
 			if ticket['subject'] == "Delivery Status Notification (Failure)" and ticket['status'] != "Solved":
+			#if ticket['subject'] in subjects:
 				OpenBounceTickets.append(ticket['id'])
 		url = data['next_page']
 	return OpenBounceTickets
