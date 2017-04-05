@@ -41,6 +41,8 @@ def getSuspendedTickets(user, pwd):
 		# delete the collected tickets
 		deleteTickets(user, pwd, suspendedTickets)
 
+		print "Deleting {0} tickets".format(len(suspendedTickets))
+
 		suspendedTickets = []
 
 		# throttle every 200 tickets to stay within the rate limit
