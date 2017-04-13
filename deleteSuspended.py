@@ -8,6 +8,8 @@ pwd = getpass.getpass('Enter your Zendesk password: ')
 org = raw_input('Enter your organization: ')
 
 def deleteTickets(user, pwd, tixToDelete):
+	print "deleting {0} tickets".format(len(tixToDelete))
+	
 	url = 'https://{0}.zendesk.com/api/v2/suspended_tickets/destroy_many.json?ids='.format(org)
 
 	# create the URL
@@ -25,8 +27,9 @@ def getSuspendedTickets(user, pwd):
 	# initial URL to request first 100 tickets
 	url = 'https://{0}.zendesk.com/api/v2/suspended_tickets.json"'.format(org)
 	
-	while url:
+	while True:
 		hundreds = 1
+		print "on round ", hundreds
 
 		# collect suspended ticket IDs here
 		suspendedTickets = []
@@ -37,6 +40,10 @@ def getSuspendedTickets(user, pwd):
 		# collect the IDs for the <= 100 suspended tickets
 		for ticket in ticketList:
 			suspendedTickets.append(ticket['id'])
+
+		# if there are no tickts, break
+		if len(suspendedTickets) == 0:
+			break
 
 		# delete the collected tickets
 		deleteTickets(user, pwd, suspendedTickets)
@@ -51,6 +58,7 @@ def getSuspendedTickets(user, pwd):
 		hundreds += 1
 
 		# continue with the next 100 tickets
-		url = data['next_page']
+		# url = data['next_page']
+		# print url
 
 getSuspendedTickets(user, pwd)
