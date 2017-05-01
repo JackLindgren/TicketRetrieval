@@ -9,7 +9,7 @@ org = raw_input('Enter your organization: ')
 
 def deleteTickets(user, pwd, tixToDelete):
 	print "deleting {0} tickets".format(len(tixToDelete))
-	
+
 	url = 'https://{0}.zendesk.com/api/v2/suspended_tickets/destroy_many.json?ids='.format(org)
 
 	# create the URL
@@ -26,9 +26,9 @@ def deleteTickets(user, pwd, tixToDelete):
 def getSuspendedTickets(user, pwd):
 	# initial URL to request first 100 tickets
 	url = 'https://{0}.zendesk.com/api/v2/suspended_tickets.json"'.format(org)
-	
+
+	hundreds = 1
 	while True:
-		hundreds = 1
 		print "on round ", hundreds
 
 		# collect suspended ticket IDs here
@@ -53,7 +53,7 @@ def getSuspendedTickets(user, pwd):
 		suspendedTickets = []
 
 		# throttle every 200 tickets to stay within the rate limit
-		if hundreds % 2 == 0:
+		if hundreds % 4 == 0:
 			time.sleep(45)
 		hundreds += 1
 
